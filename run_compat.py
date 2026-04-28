@@ -33,13 +33,20 @@ GAME_EXTS = (".jar", ".zip", ".jad")
 # stderr pattern → status
 PATTERNS = [
     ("unsupported_format", re.compile(r"Unknown (archive|file) format", re.I)),
-    ("unimplemented",      re.compile(r"(not yet implemented|unimplemented|todo!|InvalidJavaMethod|MethodNotFound)", re.I)),
-    ("panic",              re.compile(r"panicked at", re.I)),
-    ("load_error",         re.compile(r"(failed to (load|parse|read)|Error: )", re.I)),
+    (
+        "unimplemented",
+        re.compile(
+            r"(not yet implemented|unimplemented|todo!|InvalidJavaMethod|MethodNotFound)",
+            re.I,
+        ),
+    ),
+    ("panic", re.compile(r"panicked at", re.I)),
+    ("load_error", re.compile(r"(failed to (load|parse|read)|Error: )", re.I)),
 ]
 
 
 # ---------- fetch ----------
+
 
 def cmd_fetch(args: argparse.Namespace) -> int:
     DOWNLOADS.mkdir(exist_ok=True)
@@ -49,7 +56,9 @@ def cmd_fetch(args: argparse.Namespace) -> int:
     if not target.exists() or args.redownload:
         download_with_resume(ARCHIVE_URL, target)
     else:
-        print(f"[fetch] already have {target.name} ({target.stat().st_size/1e6:.1f} MB)")
+        print(
+            f"[fetch] already have {target.name} ({target.stat().st_size/1e6:.1f} MB)"
+        )
 
     print("[fetch] extracting...")
     extract_recursive(target, CORPUS)
@@ -85,6 +94,7 @@ def extract_recursive(zip_path: Path, dest: Path) -> None:
 
 # ---------- test ----------
 
+
 def cmd_test(args: argparse.Namespace) -> int:
     wie = Path(args.wie).resolve()
     if not wie.exists():
@@ -95,7 +105,9 @@ def cmd_test(args: argparse.Namespace) -> int:
     games = list(discover_games(CORPUS))
     if args.limit:
         games = games[: args.limit]
-    print(f"[test] {len(games)} candidate games (timeout={args.timeout}s, jobs={args.jobs})")
+    print(
+        f"[test] {len(games)} candidate games (timeout={args.timeout}s, jobs={args.jobs})"
+    )
 
     pending = [g for g in games if not result_path(g).exists() or args.force]
     print(f"[test] {len(pending)} to run ({len(games)-len(pending)} cached)")
@@ -181,7 +193,9 @@ def run_one(wie: Path, game: Path, timeout: float) -> dict:
         status = early if early else "ok_alive"
         rc = -1
 
-    return make_result(game, status, summarize_stderr(stderr_s), stderr_s[-4000:], rc, elapsed)
+    return make_result(
+        game, status, summarize_stderr(stderr_s), stderr_s[-6000:], rc, elapsed
+    )
 
 
 def safe_decode(b: bytes) -> str:
@@ -219,7 +233,9 @@ def summarize_stderr(stderr: str) -> str:
     return (lines[-1] if lines else "")[:300]
 
 
-def make_result(game: Path, status: str, summary: str, stderr_tail: str, rc: int, elapsed: float) -> dict:
+def make_result(
+    game: Path, status: str, summary: str, stderr_tail: str, rc: int, elapsed: float
+) -> dict:
     return {
         "id": game_id(game),
         "path": str(game.relative_to(CORPUS)).replace("\\", "/"),
@@ -281,7 +297,9 @@ def cmd_report(args: argparse.Namespace) -> int:
         by_status[r["status"]].append(r)
 
     (ROOT / "report.json").write_text(
-        json.dumps({"counts": dict(counts), "results": items}, ensure_ascii=False, indent=2),
+        json.dumps(
+            {"counts": dict(counts), "results": items}, ensure_ascii=False, indent=2
+        ),
         encoding="utf-8",
     )
 
@@ -313,6 +331,7 @@ def cmd_report(args: argparse.Namespace) -> int:
 
 # ---------- main ----------
 
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__)
     sub = ap.add_subparsers(dest="cmd", required=True)
@@ -324,7 +343,12 @@ def main() -> int:
     t = sub.add_parser("test", help="run wie_cli on every game")
     t.add_argument("--wie", required=True, help="path to wie_cli executable")
     t.add_argument("--timeout", type=float, default=25.0)
-    t.add_argument("--jobs", type=int, default=1, help="parallel jobs (winit windows pop up - keep 1 unless you don't mind)")
+    t.add_argument(
+        "--jobs",
+        type=int,
+        default=1,
+        help="parallel jobs (winit windows pop up - keep 1 unless you don't mind)",
+    )
     t.add_argument("--limit", type=int, default=0)
     t.add_argument("--force", action="store_true", help="re-run cached results")
     t.set_defaults(func=cmd_test)

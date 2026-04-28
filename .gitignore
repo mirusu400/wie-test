@@ -5,4 +5,3 @@ downloads/
 __pycache__/
 .venv/
 venv/
-report.json
