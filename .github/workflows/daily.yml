@@ -1,0 +1,162 @@
+name: daily compat test
+
+on:
+  schedule:
+    # 14:00 UTC = 23:00 KST (Asia/Seoul, UTC+9)
+    - cron: '0 14 * * *'
+  workflow_dispatch:
+    inputs:
+      force:
+        description: 'Run even if upstream wie SHA unchanged'
+        type: boolean
+        default: false
+      ref:
+        description: 'wie ref to test (default: upstream HEAD)'
+        type: string
+        default: ''
+
+permissions:
+  contents: write
+
+concurrency:
+  group: daily-compat
+  cancel-in-progress: false
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 330
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Resolve upstream wie SHA
+        id: upstream
+        run: |
+          set -euo pipefail
+          if [ -n "${{ inputs.ref }}" ]; then
+            sha=$(git ls-remote https://github.com/dlunch/wie.git "${{ inputs.ref }}" | awk '{print $1}')
+            [ -z "$sha" ] && sha="${{ inputs.ref }}"
+          else
+            sha=$(git ls-remote https://github.com/dlunch/wie.git HEAD | awk '{print $1}')
+          fi
+          echo "sha=$sha" >> "$GITHUB_OUTPUT"
+          last=""
+          [ -f .github/last_wie_sha ] && last=$(cat .github/last_wie_sha)
+          echo "last=$last" >> "$GITHUB_OUTPUT"
+          if [ "$sha" = "$last" ] && [ "${{ inputs.force }}" != "true" ]; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "No new wie commits since $last"
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+            echo "Will test wie@$sha (last=$last)"
+          fi
+
+      - name: Install system deps
+        if: steps.upstream.outputs.skip != 'true'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            xvfb \
+            libx11-6 libxcursor1 libxi6 libxrandr2 \
+            libxkbcommon-x11-0 \
+            libxcb1 libxcb-render0 libxcb-shape0 libxcb-xfixes0 \
+            libwayland-client0 \
+            libgl1 libegl1 libgl1-mesa-dri \
+            libasound2-dev libudev-dev \
+            pkg-config
+
+      - name: Set up Rust
+        if: steps.upstream.outputs.skip != 'true'
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache cargo registry
+        if: steps.upstream.outputs.skip != 'true'
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+          key: cargo-registry-${{ runner.os }}-${{ steps.upstream.outputs.sha }}
+          restore-keys: cargo-registry-${{ runner.os }}-
+
+      - name: Clone wie
+        if: steps.upstream.outputs.skip != 'true'
+        run: |
+          git clone https://github.com/dlunch/wie.git wie-upstream
+          git -C wie-upstream checkout ${{ steps.upstream.outputs.sha }}
+
+      - name: Cache wie build
+        if: steps.upstream.outputs.skip != 'true'
+        uses: actions/cache@v4
+        with:
+          path: wie-upstream/target
+          key: wie-target-${{ runner.os }}-${{ hashFiles('wie-upstream/Cargo.lock') }}
+          restore-keys: wie-target-${{ runner.os }}-
+
+      - name: Build wie_cli
+        if: steps.upstream.outputs.skip != 'true'
+        run: cargo build --release --manifest-path wie-upstream/Cargo.toml --bin wie_cli
+
+      - uses: actions/setup-python@v5
+        if: steps.upstream.outputs.skip != 'true'
+        with:
+          python-version: '3.12'
+          cache: pip
+
+      - name: Install Python deps
+        if: steps.upstream.outputs.skip != 'true'
+        run: pip install -r requirements.txt
+
+      - name: Fetch corpus (no cache — copyright)
+        if: steps.upstream.outputs.skip != 'true'
+        run: python run_compat.py fetch
+
+      - name: Run tests
+        if: steps.upstream.outputs.skip != 'true'
+        env:
+          WINIT_UNIX_BACKEND: x11
+          RUST_BACKTRACE: '1'
+        run: |
+          xvfb-run -a --server-args='-screen 0 1024x768x24' \
+            python run_compat.py test \
+              --wie wie-upstream/target/release/wie_cli \
+              --timeout 25 \
+              --jobs 1
+
+      - name: Render report
+        if: steps.upstream.outputs.skip != 'true'
+        run: python run_compat.py report
+
+      - name: Commit results
+        if: steps.upstream.outputs.skip != 'true'
+        run: |
+          set -euo pipefail
+          echo "${{ steps.upstream.outputs.sha }}" > .github/last_wie_sha
+          short=$(echo "${{ steps.upstream.outputs.sha }}" | cut -c1-7)
+          ts=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+          {
+            echo "wie-upstream commit: \`${{ steps.upstream.outputs.sha }}\`  "
+            echo "tested at: $ts UTC"
+            echo
+            cat report.md
+          } > report.md.new
+          mv report.md.new report.md
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add report.md report.json .github/last_wie_sha
+          if git diff --staged --quiet; then
+            echo "No report changes to commit"
+          else
+            git commit -m "compat: daily run against dlunch/wie@$short"
+            git push
+          fi
+
+      - name: Upload per-game results
+        if: steps.upstream.outputs.skip != 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: results-${{ steps.upstream.outputs.sha }}
+          path: results/
+          retention-days: 30
+          if-no-files-found: warn

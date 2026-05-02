@@ -1,6 +1,7 @@
 corpus/
 results/
 downloads/
+wie-upstream/
 *.pyc
 __pycache__/
 .venv/
