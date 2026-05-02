@@ -30,7 +30,26 @@ ARCHIVE_URL = f"https://archive.org/download/{ARCHIVE_ITEM}/{ARCHIVE_FILE}"
 
 GAME_EXTS = (".jar", ".zip", ".jad")
 
-# stderr pattern → status
+# stderr noise from headless audio/graphics init that must not influence classification
+NOISE_PREFIXES = (
+    "ALSA lib ",
+    "AL lib: ",
+    "jack server ",
+    "Cannot connect to server",
+    "Failed to connect to the bus",
+)
+
+
+def denoise_stderr(text: str) -> str:
+    return "\n".join(
+        ln
+        for ln in text.splitlines()
+        if not any(ln.lstrip().startswith(p) for p in NOISE_PREFIXES)
+    )
+
+
+# stderr pattern → status. Anchors require line start so middle-of-line "error:"
+# in noise (e.g. ALSA "returned error: ...") cannot match.
 PATTERNS = [
     ("unsupported_format", re.compile(r"Unknown (archive|file) format", re.I)),
     (
@@ -41,7 +60,10 @@ PATTERNS = [
         ),
     ),
     ("panic", re.compile(r"panicked at", re.I)),
-    ("load_error", re.compile(r"(failed to (load|parse|read)|Error: )", re.I)),
+    (
+        "load_error",
+        re.compile(r"^\s*(failed to (load|parse|read)|Error: )", re.I | re.M),
+    ),
 ]
 
 
@@ -217,18 +239,24 @@ def classify(rc: int, stderr: str) -> str:
 
 
 def classify_stderr_only(stderr: str) -> str | None:
+    cleaned = denoise_stderr(stderr)
     for status, pat in PATTERNS:
-        if pat.search(stderr):
+        if pat.search(cleaned):
             return status
     return None
 
 
 def summarize_stderr(stderr: str) -> str:
     """Pick the most informative line for the report."""
-    lines = [ln.strip() for ln in stderr.splitlines() if ln.strip()]
+    cleaned = denoise_stderr(stderr)
+    lines = [ln.strip() for ln in cleaned.splitlines() if ln.strip()]
     for needle in ("panicked at", "Error:", "not yet implemented", "Unknown"):
         for ln in lines:
-            if needle.lower() in ln.lower():
+            low = ln.lower()
+            if needle.lower() == "error:":
+                if low.startswith("error:"):
+                    return ln[:300]
+            elif needle.lower() in low:
                 return ln[:300]
     return (lines[-1] if lines else "")[:300]
 
@@ -277,6 +305,41 @@ STATUS_EMOJI = {
     "unsupported_format": "⚪",
     "runner_error": "❓",
 }
+
+
+def cmd_reclassify(args: argparse.Namespace) -> int:
+    """Re-run classify+summarize on stored stderr_tail (no wie_cli rerun)."""
+    n = 0
+    for p in sorted(RESULTS.glob("*.json")):
+        try:
+            r = json.loads(p.read_text(encoding="utf-8"))
+        except Exception as e:
+            print(f"  ! bad result {p.name}: {e}", file=sys.stderr)
+            continue
+        tail = r.get("stderr_tail") or ""
+        rc = r.get("returncode", 0)
+        new_status = classify_stderr_only(tail)
+        if not new_status:
+            if r.get("status") == "runner_error":
+                new_status = "runner_error"
+            elif rc == 0:
+                new_status = "ok_exit"
+            elif rc == -1:
+                new_status = "ok_alive"
+            else:
+                new_status = r.get("status", "load_error")
+        new_summary = summarize_stderr(tail)
+        if new_status != r.get("status") or new_summary != r.get("summary"):
+            r["status"] = new_status
+            r["summary"] = new_summary
+            tmp = p.with_suffix(".tmp")
+            tmp.write_text(
+                json.dumps(r, ensure_ascii=False, indent=2), encoding="utf-8"
+            )
+            tmp.replace(p)
+            n += 1
+    print(f"[reclassify] updated {n} results")
+    return 0
 
 
 def cmd_report(args: argparse.Namespace) -> int:
@@ -352,6 +415,12 @@ def main() -> int:
     t.add_argument("--limit", type=int, default=0)
     t.add_argument("--force", action="store_true", help="re-run cached results")
     t.set_defaults(func=cmd_test)
+
+    rc = sub.add_parser(
+        "reclassify",
+        help="re-run classify on stored stderr_tail (cheap, no wie_cli rerun)",
+    )
+    rc.set_defaults(func=cmd_reclassify)
 
     r = sub.add_parser("report", help="aggregate results into report.md")
     r.set_defaults(func=cmd_report)
