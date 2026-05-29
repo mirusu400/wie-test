@@ -8,7 +8,7 @@ Total: **397** games tested
 | Status | Count |
 |---|---:|
 | 🟢 ok_alive | 150 |
-| 🟢 ok_exit | 68 |
+| 🟡 ok_exit | 68 |
 | 🟡 unimplemented | 32 |
 | 🔴 panic | 56 |
 | ⚪ unsupported_format | 91 |
@@ -169,7 +169,7 @@ Total: **397** games tested
 | `KTF/퍼즐&미니게임/[KTF]현영맞고2006/현영맞고_2006.zip` | 617 KB | 25.04s |  |
 | `KTF/시뮬레이션&타이쿤/[KTF]화장빨인생/화장빨인생.zip` | 442 KB | 25.04s |  |
 
-## 🟢 ok_exit (68)
+## 🟡 ok_exit (68)
 
 | Game | Size | Time | Detail |
 |---|---:|---:|---|

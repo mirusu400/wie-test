@@ -37,7 +37,7 @@ report.json    # aggregated results
 | Status | Meaning |
 |--------|---------|
 | `ok_alive` | Process still running at timeout (likely booted) |
-| `ok_exit` | Clean exit (game closed itself) |
+| `ok_exit` | Process exited 0 — abnormal for J2ME (game should keep running until killed) |
 | `unsupported_format` | wie says "Unknown archive format" / "Unknown file format" |
 | `unimplemented` | Hit `unimplemented!()` / `Not yet implemented` / `todo!` |
 | `panic` | Rust panic (other) |

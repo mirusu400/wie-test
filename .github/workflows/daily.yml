@@ -147,8 +147,26 @@ jobs:
           git add report.md report.json .github/last_wie_sha
           if git diff --staged --quiet; then
             echo "No report changes to commit"
+            echo "report_committed=false" >> "$GITHUB_ENV"
           else
             git commit -m "compat: daily run against dlunch/wie@$short"
+            git push
+            echo "report_committed=true" >> "$GITHUB_ENV"
+          fi
+
+      - name: Build history for Pages
+        if: steps.upstream.outputs.skip != 'true'
+        run: python run_compat.py history
+
+      - name: Commit Pages data
+        if: steps.upstream.outputs.skip != 'true' && env.report_committed == 'true'
+        run: |
+          set -euo pipefail
+          git add docs/
+          if git diff --staged --quiet; then
+            echo "No docs changes to commit"
+          else
+            git commit -m "pages: update history"
             git push
           fi
 

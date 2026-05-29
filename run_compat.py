@@ -298,7 +298,7 @@ STATUS_ORDER = [
 
 STATUS_EMOJI = {
     "ok_alive": "🟢",
-    "ok_exit": "🟢",
+    "ok_exit": "🟡",
     "unimplemented": "🟡",
     "panic": "🔴",
     "load_error": "🔴",
@@ -392,6 +392,56 @@ def cmd_report(args: argparse.Namespace) -> int:
     return 0
 
 
+# ---------- history ----------
+
+
+def cmd_history(args: argparse.Namespace) -> int:
+    """Walk git log of report.json to produce docs/history.json time series."""
+    out_dir = ROOT / "docs"
+    out_dir.mkdir(exist_ok=True)
+    out = out_dir / "history.json"
+
+    try:
+        log = subprocess.check_output(
+            ["git", "log", "--reverse", "--format=%H|%cI", "--", "report.json"],
+            cwd=ROOT,
+            text=True,
+        )
+    except subprocess.CalledProcessError as e:
+        print(f"git log failed: {e}", file=sys.stderr)
+        return 1
+
+    rows = []
+    for line in log.splitlines():
+        if "|" not in line:
+            continue
+        sha, date = line.split("|", 1)
+        try:
+            blob = subprocess.check_output(
+                ["git", "show", f"{sha}:report.json"], cwd=ROOT
+            )
+            data = json.loads(blob)
+        except (subprocess.CalledProcessError, json.JSONDecodeError):
+            continue
+        counts = data.get("counts", {})
+        if not isinstance(counts, dict):
+            continue
+        total = sum(int(v) for v in counts.values() if isinstance(v, int))
+        rows.append(
+            {
+                "sha": sha,
+                "short": sha[:7],
+                "date": date,
+                "total": total,
+                "counts": {k: int(v) for k, v in counts.items()},
+            }
+        )
+
+    out.write_text(json.dumps(rows, ensure_ascii=False, indent=2), encoding="utf-8")
+    print(f"[history] wrote {out} ({len(rows)} commits)")
+    return 0
+
+
 # ---------- main ----------
 
 
@@ -424,6 +474,11 @@ def main() -> int:
 
     r = sub.add_parser("report", help="aggregate results into report.md")
     r.set_defaults(func=cmd_report)
+
+    h = sub.add_parser(
+        "history", help="build docs/history.json from git log of report.json"
+    )
+    h.set_defaults(func=cmd_history)
 
     args = ap.parse_args()
     return args.func(args)

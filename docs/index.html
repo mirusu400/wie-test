@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>wie compatibility status</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+<style>
+  :root { color-scheme: light dark; }
+  body { font: 14px/1.4 system-ui, -apple-system, Segoe UI, sans-serif;
+         max-width: 1100px; margin: 2rem auto; padding: 0 1rem; }
+  h1 { margin: 0 0 .25rem; font-size: 1.4rem; }
+  .sub { color: #888; margin-bottom: 1.5rem; }
+  .latest { display: flex; flex-wrap: wrap; gap: .5rem 1.25rem; margin: 1rem 0 1.5rem; }
+  .latest span { white-space: nowrap; }
+  .dot { display: inline-block; width: .7em; height: .7em; border-radius: 50%;
+         vertical-align: middle; margin-right: .35em; }
+  .chart-wrap { position: relative; height: 420px; margin-bottom: 2rem; }
+  a { color: inherit; }
+  code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+</style>
+</head>
+<body>
+<h1>wie compatibility status</h1>
+<div class="sub">
+  Daily run of <a href="https://github.com/dlunch/wie">dlunch/wie</a> against
+  a corpus of Korean WIPI / J2ME games.
+  Source: <a href="https://github.com/mirusu400/wie-test">mirusu400/wie-test</a>.
+</div>
+
+<div id="latest" class="latest"></div>
+
+<div class="chart-wrap"><canvas id="stacked"></canvas></div>
+<div class="chart-wrap"><canvas id="lines"></canvas></div>
+
+<p class="sub" id="footer"></p>
+
+<script>
+const STATUSES = [
+  { key: "ok_alive",           label: "ok_alive",           color: "#22c55e" },
+  { key: "ok_exit",            label: "ok_exit (abnormal)", color: "#eab308" },
+  { key: "unimplemented",      label: "unimplemented",      color: "#f59e0b" },
+  { key: "panic",              label: "panic",              color: "#ef4444" },
+  { key: "load_error",         label: "load_error",         color: "#b91c1c" },
+  { key: "unsupported_format", label: "unsupported_format", color: "#9ca3af" },
+  { key: "runner_error",       label: "runner_error",       color: "#6b7280" },
+];
+
+async function main() {
+  const res = await fetch("history.json", { cache: "no-store" });
+  const rows = await res.json();
+  if (!rows.length) {
+    document.body.insertAdjacentHTML("beforeend", "<p>No history yet.</p>");
+    return;
+  }
+
+  const labels = rows.map(r => r.date);
+
+  // datasets per status
+  const datasets = STATUSES.map(s => ({
+    label: s.label,
+    data: rows.map(r => ({ x: r.date, y: r.counts[s.key] ?? 0 })),
+    backgroundColor: s.color,
+    borderColor: s.color,
+    fill: true,
+    tension: 0.15,
+    pointRadius: 2,
+  }));
+
+  // Stacked area
+  new Chart(document.getElementById("stacked"), {
+    type: "line",
+    data: { datasets },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: "index", intersect: false },
+      plugins: {
+        title: { display: true, text: "Status counts over time (stacked)" },
+        tooltip: { callbacks: {
+          title: items => new Date(items[0].parsed.x).toISOString().slice(0,10),
+        }},
+      },
+      scales: {
+        x: { type: "time", time: { unit: "day" } },
+        y: { stacked: true, beginAtZero: true, title: { display: true, text: "games" } },
+      },
+    },
+  });
+
+  // Per-status lines (unstacked)
+  const lineDatasets = datasets.map(d => ({ ...d, fill: false }));
+  new Chart(document.getElementById("lines"), {
+    type: "line",
+    data: { datasets: lineDatasets },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: "index", intersect: false },
+      plugins: {
+        title: { display: true, text: "Status counts over time (per status)" },
+      },
+      scales: {
+        x: { type: "time", time: { unit: "day" } },
+        y: { beginAtZero: true, title: { display: true, text: "games" } },
+      },
+    },
+  });
+
+  // Latest summary
+  const latest = rows[rows.length - 1];
+  const el = document.getElementById("latest");
+  el.innerHTML =
+    `<span><strong>Latest:</strong> ${new Date(latest.date).toISOString().slice(0,16).replace("T"," ")} UTC</span>` +
+    `<span>wie@<code>${latest.short}</code></span>` +
+    `<span>total <strong>${latest.total}</strong></span>` +
+    STATUSES.filter(s => latest.counts[s.key])
+      .map(s => `<span><i class="dot" style="background:${s.color}"></i>${s.label}: <strong>${latest.counts[s.key]}</strong></span>`)
+      .join("");
+
+  document.getElementById("footer").textContent =
+    `${rows.length} runs tracked · first ${rows[0].date.slice(0,10)} · latest ${latest.date.slice(0,10)}`;
+}
+main().catch(e => {
+  document.body.insertAdjacentHTML("beforeend",
+    `<pre style="color:#c00">failed: ${e}</pre>`);
+});
+</script>
+</body>
+</html>
