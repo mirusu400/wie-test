@@ -1,27 +1,27 @@
 [
   {
-    "sha": "1c614c98e943315673ec3da04fc165f5e254c374",
-    "short": "1c614c9",
-    "date": "2026-06-04T18:38:23Z",
-    "total": 397,
-    "counts": {
-      "unsupported_format": 91,
-      "ok_exit": 67,
-      "ok_alive": 152,
-      "panic": 55,
-      "unimplemented": 32
-    }
-  },
-  {
-    "sha": "67673fd3067f69f988a3a77086a28459d8ae6fc3",
-    "short": "67673fd",
-    "date": "2026-06-05T17:52:01Z",
+    "sha": "f0fd2d08925dacf10d54edd156ef10c465a1a28a",
+    "short": "f0fd2d0",
+    "date": "2026-06-05T17:52:03Z",
     "total": 397,
     "counts": {
       "unsupported_format": 91,
       "ok_exit": 66,
       "ok_alive": 153,
       "panic": 55,
+      "unimplemented": 32
+    }
+  },
+  {
+    "sha": "80d35195ddf9619282eebc4cf3f670c474e7d039",
+    "short": "80d3519",
+    "date": "2026-06-08T18:53:09Z",
+    "total": 397,
+    "counts": {
+      "unsupported_format": 91,
+      "ok_exit": 65,
+      "ok_alive": 153,
+      "panic": 56,
       "unimplemented": 32
     }
   }
