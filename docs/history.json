@@ -1,8 +1,8 @@
 [
   {
-    "sha": "3e577a94cba99e9c209eee1c0ede5554343d8fca",
-    "short": "3e577a9",
-    "date": "2026-06-10T18:37:13Z",
+    "sha": "aa97d2eaa27b6dce7ed4bb0ccfa10d34f1bed8bb",
+    "short": "aa97d2e",
+    "date": "2026-06-19T17:45:33Z",
     "total": 397,
     "counts": {
       "unsupported_format": 91,
@@ -13,15 +13,15 @@
     }
   },
   {
-    "sha": "c2388029cfe31aca87fdbb98cb4748a58d6174d2",
-    "short": "c238802",
-    "date": "2026-06-19T17:45:31Z",
+    "sha": "0cc8710aef6af3a97a549fa76735722483c22e9d",
+    "short": "0cc8710",
+    "date": "2026-06-22T19:21:16Z",
     "total": 397,
     "counts": {
       "unsupported_format": 91,
-      "ok_exit": 67,
-      "ok_alive": 151,
-      "panic": 56,
+      "ok_exit": 90,
+      "ok_alive": 139,
+      "panic": 45,
       "unimplemented": 32
     }
   }
