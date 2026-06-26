@@ -1,8 +1,280 @@
 [
   {
-    "sha": "f33df0bb0fa76e595f48fc999c9f456e85e3131e",
-    "short": "f33df0b",
-    "date": "2026-06-24T17:31:53Z",
+    "sha": "cd8d20826a99c162038ad1b1b1c60565a0c4efe4",
+    "short": "cd8d208",
+    "date": "2026-04-29T01:26:02+09:00",
+    "total": 397,
+    "counts": {
+      "unsupported_format": 91,
+      "load_error": 71,
+      "panic": 114,
+      "ok_alive": 85,
+      "unimplemented": 36
+    }
+  },
+  {
+    "sha": "10764b6b4676d272e989a667df39f11c880882ea",
+    "short": "10764b6",
+    "date": "2026-05-02T10:08:58Z",
+    "total": 397,
+    "counts": {
+      "unsupported_format": 91,
+      "load_error": 209,
+      "panic": 61,
+      "unimplemented": 36
+    }
+  },
+  {
+    "sha": "ae740711b02add6f9fc2d65f542e5a8513e271dc",
+    "short": "ae74071",
+    "date": "2026-05-02T15:12:19Z",
+    "total": 397,
+    "counts": {
+      "unsupported_format": 91,
+      "ok_exit": 78,
+      "ok_alive": 131,
+      "panic": 61,
+      "unimplemented": 36
+    }
+  },
+  {
+    "sha": "a0e27e7d0119cc36c0369c631e977f8a05639357",
+    "short": "a0e27e7",
+    "date": "2026-05-03T16:05:45Z",
+    "total": 397,
+    "counts": {
+      "unsupported_format": 91,
+      "ok_exit": 78,
+      "ok_alive": 131,
+      "panic": 61,
+      "unimplemented": 36
+    }
+  },
+  {
+    "sha": "73acbcb00f0916f219607ebeffcb7a7ae77df792",
+    "short": "73acbcb",
+    "date": "2026-05-05T17:04:09Z",
+    "total": 397,
+    "counts": {
+      "unsupported_format": 91,
+      "ok_exit": 77,
+      "ok_alive": 132,
+      "panic": 61,
+      "unimplemented": 36
+    }
+  },
+  {
+    "sha": "8c42bf364e5e0ad9d821225cb2b37116d0b24de2",
+    "short": "8c42bf3",
+    "date": "2026-05-09T16:15:01Z",
+    "total": 397,
+    "counts": {
+      "unsupported_format": 91,
+      "ok_exit": 78,
+      "ok_alive": 132,
+      "panic": 60,
+      "unimplemented": 36
+    }
+  },
+  {
+    "sha": "00203e04f500ed1f32a7bf8eb75412126acd95f3",
+    "short": "00203e0",
+    "date": "2026-05-12T05:33:14Z",
+    "total": 397,
+    "counts": {
+      "unsupported_format": 91,
+      "ok_exit": 75,
+      "ok_alive": 134,
+      "panic": 61,
+      "unimplemented": 36
+    }
+  },
+  {
+    "sha": "4d198ebae2e04e10afc565797a2ea33e8ef03350",
+    "short": "4d198eb",
+    "date": "2026-05-12T17:30:52Z",
+    "total": 397,
+    "counts": {
+      "unsupported_format": 91,
+      "ok_exit": 80,
+      "ok_alive": 138,
+      "panic": 56,
+      "unimplemented": 32
+    }
+  },
+  {
+    "sha": "ad0416e451fc1589b93b0c26988a4de3db6ccc8e",
+    "short": "ad0416e",
+    "date": "2026-05-13T17:40:52Z",
+    "total": 397,
+    "counts": {
+      "unsupported_format": 91,
+      "ok_exit": 76,
+      "ok_alive": 141,
+      "panic": 57,
+      "unimplemented": 32
+    }
+  },
+  {
+    "sha": "cc94fe4218facba8fcdc359ec12168c641585dc1",
+    "short": "cc94fe4",
+    "date": "2026-05-15T17:20:24Z",
+    "total": 397,
+    "counts": {
+      "unsupported_format": 91,
+      "ok_exit": 76,
+      "ok_alive": 142,
+      "panic": 56,
+      "unimplemented": 32
+    }
+  },
+  {
+    "sha": "bac06d87e6eecbd4db622398298fac8603aed9b6",
+    "short": "bac06d8",
+    "date": "2026-05-20T18:29:59Z",
+    "total": 397,
+    "counts": {
+      "unsupported_format": 91,
+      "ok_exit": 77,
+      "ok_alive": 140,
+      "panic": 57,
+      "unimplemented": 32
+    }
+  },
+  {
+    "sha": "015dc8a8acbeaab379645abffa9cb13a1e97231f",
+    "short": "015dc8a",
+    "date": "2026-05-21T18:30:29Z",
+    "total": 397,
+    "counts": {
+      "unsupported_format": 91,
+      "ok_exit": 68,
+      "ok_alive": 150,
+      "panic": 56,
+      "unimplemented": 32
+    }
+  },
+  {
+    "sha": "fa2ddab5e5f35da62f011e51a57a89aecfb15c33",
+    "short": "fa2ddab",
+    "date": "2026-05-29T09:48:35Z",
+    "total": 397,
+    "counts": {
+      "unsupported_format": 91,
+      "ok_exit": 68,
+      "ok_alive": 150,
+      "panic": 56,
+      "unimplemented": 32
+    }
+  },
+  {
+    "sha": "6b0cc88fc91ba2a46a6f8fed00366541134584dd",
+    "short": "6b0cc88",
+    "date": "2026-06-02T19:31:04Z",
+    "total": 397,
+    "counts": {
+      "unsupported_format": 91,
+      "ok_exit": 65,
+      "ok_alive": 154,
+      "panic": 55,
+      "unimplemented": 32
+    }
+  },
+  {
+    "sha": "4b4d18a24c47618693da22c50d215b835e38b366",
+    "short": "4b4d18a",
+    "date": "2026-06-04T18:38:21Z",
+    "total": 397,
+    "counts": {
+      "unsupported_format": 91,
+      "ok_exit": 67,
+      "ok_alive": 152,
+      "panic": 55,
+      "unimplemented": 32
+    }
+  },
+  {
+    "sha": "67673fd3067f69f988a3a77086a28459d8ae6fc3",
+    "short": "67673fd",
+    "date": "2026-06-05T17:52:01Z",
+    "total": 397,
+    "counts": {
+      "unsupported_format": 91,
+      "ok_exit": 66,
+      "ok_alive": 153,
+      "panic": 55,
+      "unimplemented": 32
+    }
+  },
+  {
+    "sha": "80d35195ddf9619282eebc4cf3f670c474e7d039",
+    "short": "80d3519",
+    "date": "2026-06-08T18:53:09Z",
+    "total": 397,
+    "counts": {
+      "unsupported_format": 91,
+      "ok_exit": 65,
+      "ok_alive": 153,
+      "panic": 56,
+      "unimplemented": 32
+    }
+  },
+  {
+    "sha": "972683c644361282ad039afc3e2580547bbc6e62",
+    "short": "972683c",
+    "date": "2026-06-09T17:52:33Z",
+    "total": 397,
+    "counts": {
+      "unsupported_format": 91,
+      "ok_exit": 65,
+      "ok_alive": 154,
+      "panic": 55,
+      "unimplemented": 32
+    }
+  },
+  {
+    "sha": "04eb8d65f00d5f9554fd41b811af62047fcc12dd",
+    "short": "04eb8d6",
+    "date": "2026-06-10T18:37:11Z",
+    "total": 397,
+    "counts": {
+      "unsupported_format": 91,
+      "ok_exit": 67,
+      "ok_alive": 151,
+      "panic": 56,
+      "unimplemented": 32
+    }
+  },
+  {
+    "sha": "c2388029cfe31aca87fdbb98cb4748a58d6174d2",
+    "short": "c238802",
+    "date": "2026-06-19T17:45:31Z",
+    "total": 397,
+    "counts": {
+      "unsupported_format": 91,
+      "ok_exit": 67,
+      "ok_alive": 151,
+      "panic": 56,
+      "unimplemented": 32
+    }
+  },
+  {
+    "sha": "0cc8710aef6af3a97a549fa76735722483c22e9d",
+    "short": "0cc8710",
+    "date": "2026-06-22T19:21:16Z",
+    "total": 397,
+    "counts": {
+      "unsupported_format": 91,
+      "ok_exit": 90,
+      "ok_alive": 139,
+      "panic": 45,
+      "unimplemented": 32
+    }
+  },
+  {
+    "sha": "06a04c959aaccf52fedb07537b7155c58c6977ba",
+    "short": "06a04c9",
+    "date": "2026-06-24T17:31:51Z",
     "total": 397,
     "counts": {
       "unsupported_format": 91,
@@ -21,6 +293,19 @@
       "unsupported_format": 91,
       "ok_exit": 91,
       "ok_alive": 140,
+      "panic": 43,
+      "unimplemented": 32
+    }
+  },
+  {
+    "sha": "16115730bf0b60d7127a69202c5ef57f0ce0d1b8",
+    "short": "1611573",
+    "date": "2026-06-26T05:34:49Z",
+    "total": 397,
+    "counts": {
+      "unsupported_format": 91,
+      "ok_exit": 90,
+      "ok_alive": 141,
       "panic": 43,
       "unimplemented": 32
     }
