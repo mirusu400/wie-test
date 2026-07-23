@@ -426,5 +426,18 @@
       "panic": 29,
       "unimplemented": 30
     }
+  },
+  {
+    "sha": "b80881b351ab81a2246bbb23282f5a60fe00fc41",
+    "short": "b80881b",
+    "date": "2026-07-23T17:23:54Z",
+    "total": 397,
+    "counts": {
+      "unsupported_format": 91,
+      "ok_exit": 60,
+      "ok_alive": 189,
+      "panic": 27,
+      "unimplemented": 30
+    }
   }
 ]
