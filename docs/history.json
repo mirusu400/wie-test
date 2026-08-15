@@ -616,5 +616,19 @@
       "unimplemented": 13,
       "load_error": 3
     }
+  },
+  {
+    "sha": "5ef6918551bf904bb16e1043df3d0ddd4f25883c",
+    "short": "5ef6918",
+    "date": "2026-08-15T16:01:36Z",
+    "total": 397,
+    "counts": {
+      "unsupported_format": 91,
+      "ok_exit": 65,
+      "ok_alive": 200,
+      "panic": 25,
+      "unimplemented": 13,
+      "load_error": 3
+    }
   }
 ]
