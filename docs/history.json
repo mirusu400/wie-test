@@ -686,5 +686,19 @@
       "unimplemented": 13,
       "load_error": 3
     }
+  },
+  {
+    "sha": "dfb6e7e292d35305011889330463d121005adddf",
+    "short": "dfb6e7e",
+    "date": "2026-08-23T15:57:10Z",
+    "total": 397,
+    "counts": {
+      "unsupported_format": 91,
+      "ok_exit": 82,
+      "ok_alive": 183,
+      "panic": 26,
+      "unimplemented": 13,
+      "load_error": 2
+    }
   }
 ]
